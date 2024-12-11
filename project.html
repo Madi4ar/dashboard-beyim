@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.5.0/dist/frappe-gantt.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <style>
+      @keyframes draw-arrow {
+        from {
+          stroke-dasharray: 0, 1000;
+          stroke-dashoffset: 0;
+        }
+        to {
+          stroke-dasharray: 1000, 0;
+          stroke-dashoffset: 0;
+        }
+      }
+
+      .arrow path {
+        stroke: #847e7e;
+        stroke-width: 1;
+        fill: none;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: draw-arrow 2s ease forwards;
+      }
+      .progressbar-text {
+        margin-left: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        font-family: Arial, sans-serif;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      #gantt-chart {
+        width: 100%;
+        height: 500px;
+        border: 1px solid #ccc;
+      }
+      .details-container {
+        padding: 10px;
+        border-radius: 4px;
+        background: #f7f7f7;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .custom-gantt {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ccc;
+        font-family: Arial, sans-serif;
+        width: 100%;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        min-height: 50px;
+      }
+
+      .name {
+        width: 200px;
+        padding: 10px;
+        border-right: 1px solid #ccc;
+        text-align: left;
+      }
+
+      .group {
+        flex: 1;
+        position: relative;
+        border-right: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .task {
+        padding: 5px 10px;
+        border-radius: 4px;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .blue {
+        background-color: #62b4e1;
+      }
+
+      .pink {
+        background-color: #f7c5d8;
+      }
+
+      .gantt .arrow {
+        display: none;
+      }
+      .active {
+        background: white;
+        font-weight: 700;
+        border-radius: 10px;
+      }
+    </style>
+    <div class="block1">
+      <div class="container mx-auto p-2 md:p-2">
+        <div class="bg-[#F5F5F5] px-11 py-16 rounded-lg flex flex-col">
+          <div class="title w-full flex items-start">
+            <p class="font-light text-[#847E7E] text-2xl underline">
+              Проект «Отпан»
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div
+              class="flex items-center justify-between rounded-2xl bg-[#D9D9D9] py-2 px-2 w-auto mt-5"
+            >
+              <div class="px-6 py-1 programBtn tablinks active cursor-pointer">
+                По программам
+              </div>
+              <div
+                class="rounded-xl px-6 py-1 trainerBtn tablinks cursor-pointer"
+              >
+                По тренерам
+              </div>
+            </div>
+          </div>
+          <div class="programInfo tabcontent mt-10">
+            <div class="flex items-center">
+              <a href="" class="flex items-center">
+                <img src="images/Group 65.svg" />
+
+                <p class="font-bold text-base ml-5 border-b-4 border-[#CF4747]">
+                  Программы
+                </p>
+              </a>
+            </div>
+
+            <div class="flex items-center mt-5 w-[95%]">
+              <div class="flex flex-col w-full relative">
+                <div id="line_container_one" class="w-full mt-3 h-3"></div>
+              </div>
+            </div>
+
+            <div class="relative mt-20">
+              <div
+                class="absolute top-5 h-full w-[2px] bg-red-300 left-[75%]"
+              ></div>
+              <table class="bg-white">
+                <tr>
+                  <td rowspan="2" class="font-bold">Наименование программ</td>
+                  <td colspan="5" class="font-bold">Январь</td>
+                  <td colspan="5" class="font-bold">Февраль</td>
+                </tr>
+                <tr>
+                  <!-- 5 ячеек под Row 1, Cell 2 -->
+                  <td>01.01. - 05.01.</td>
+                  <td>06.01. - 12.01.</td>
+                  <td>13.01. - 19.01.</td>
+                  <td>20.01. - 26.01.</td>
+                  <td>27.01. - 31.01.</td>
+                  <!-- 5 ячеек под Row 1, Cell 3 -->
+                  <td>01.01. - 05.01.</td>
+                  <td>06.01. - 12.01.</td>
+                  <td>13.01. - 19.01.</td>
+                  <td>20.01. - 26.01.</td>
+                  <td>27.01. - 31.01.</td>
+                </tr>
+                <tr>
+                  <td colspan="1">
+                    Уроки казахского языка и казахской литературы в школе:
+                    фокусы и стратегии улучшений Beyim Ustaz
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="1">
+                    Уроки казахского языка и казахской литературы в школе:
+                    фокусы и стратегии улучшений Beyim Ustaz
+                  </td>
+                  <td colspan="5" class="bg-[#DEF2F7]">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 bg-white shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="1">
+                    Уроки казахского языка и казахской литературы в школе:
+                    фокусы и стратегии улучшений Beyim Ustaz
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colspan="1">
+                    Уроки казахского языка и казахской литературы в школе:
+                    фокусы и стратегии улучшений Beyim Ustaz
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="1">
+                    Уроки казахского языка и казахской литературы в школе:
+                    фокусы и стратегии улучшений Beyim Ustaz
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                  <td colspan="5">
+                    <div
+                      class="flex items-center justify-between rounded py-2 px-4 shadow-xl"
+                    >
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">тренеров</span>
+                      </p>
+
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        7 <br />
+                        <span class="font-medium text-base">групп</span>
+                      </p>
+                      <div class="h-14 w-[0.5px] bg-gray-700"></div>
+                      <p class="font-bold text-3xl">
+                        175 <br />
+                        <span class="font-medium text-base">слушателей</span>
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="trainerInfo tabcontent mt-10 relative hidden">
+            <div class="flex items-center">
+              <a href="" class="flex items-center">
+                <img src="images/Group 66.svg" />
+
+                <p class="font-bold text-base ml-5 border-b-4 border-[#CF4747]">
+                  Тренеры
+                </p>
+              </a>
+            </div>
+            <table class="bg-white">
+              <tr>
+                <td rowspan="2" class="font-bold">Наименование программ</td>
+                <td colspan="5" class="font-bold">Январь</td>
+                <td colspan="5" class="font-bold">Февраль</td>
+              </tr>
+              <tr>
+                <!-- 5 ячеек под Row 1, Cell 2 -->
+                <td>01.01. - 05.01.</td>
+                <td>06.01. - 12.01.</td>
+                <td>13.01. - 19.01.</td>
+                <td>20.01. - 26.01.</td>
+                <td>27.01. - 31.01.</td>
+                <!-- 5 ячеек под Row 1, Cell 3 -->
+                <td>01.01. - 05.01.</td>
+                <td>06.01. - 12.01.</td>
+                <td>13.01. - 19.01.</td>
+                <td>20.01. - 26.01.</td>
+                <td>27.01. - 31.01.</td>
+              </tr>
+              <tr>
+                <td colspan="11" class="py-10 relative">
+                  <div
+                    class="flex items-center w-[50%] absolute right-36 top-5"
+                  >
+                    <div class="flex flex-col w-full relative">
+                      <p class="font-semibold">Инновационный менеджмент</p>
+                      <div
+                        id="line_container_two"
+                        class="w-full mt-3 h-3"
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="1" class="font-semibold">Мукутов Т.К.</td>
+                <td colspan="1">
+                  <div
+                    class="flex items-center justify-between rounded py-2 px-4"
+                  ></div>
+                </td>
+                <td colspan="1"></td>
+                <td colspan="1"></td>
+                <td colspan="1"></td>
+                <td colspan="1"></td>
+                <td colspan="1"></td>
+                <td colspan="1"></td>
+                <td colspan="1"></td>
+                <td colspan="1"></td>
+                <td colspan="1"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.5.0/dist/frappe-gantt.min.js"></script>
+
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://bastauproject.kz/themes/demo/assets/javascript/numscroller-1.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/progressbar.js@1.0.1/dist/progressbar.min.js"></script>
+    <script>
+      function createLineProgressBar(
+        container,
+        color,
+        animateValue,
+        customText,
+        customStyles = {}
+      ) {
+        const progressBar = new ProgressBar.Line(container, {
+          strokeWidth: 4,
+          easing: "easeInOut",
+          duration: 1400,
+          color: color,
+          trailColor: "#eee",
+          trailWidth: 1,
+          svgStyle: { width: "100%", height: "100%" },
+          text: {
+            style: {
+              color: "#D73A49",
+              position: "absolute",
+              right: "-40px",
+              top: "0px",
+              padding: "0",
+              width: "50px",
+              textAlign: "center",
+              display: "flex",
+              alignItems: "center",
+              marginLeft: "50px",
+              fontSize: "20px",
+              fontWeight: "bold",
+              ...customStyles,
+            },
+            autoStyleContainer: false,
+          },
+          from: { color: "#FFEA82" },
+          to: { color: "#ED6A5A" },
+        });
+
+        progressBar.animate(animateValue, {
+          step: (state, bar) => {
+            const percentage = Math.round(bar.value() * 100);
+            bar.setText(`${percentage}% ${customText}`);
+          },
+        });
+
+        return progressBar;
+      }
+
+      createLineProgressBar(line_container_one, "#5ABFD6", 0.54, "исполнения");
+
+      createLineProgressBar(line_container_two, "#5ABFD6", 0.54, "исполнения", {
+        fontSize: "16px",
+        right: "-80px",
+        top: "10px",
+      });
+    </script>
+
+    <script>
+      let programInfo = document.querySelector(".programInfo");
+      let trainerInfo = document.querySelector(".trainerInfo");
+      let programBtn = document.querySelector(".programBtn");
+      let trainerBtn = document.querySelector(".trainerBtn");
+      programBtn.onclick = function () {
+        openTab(programInfo, programBtn);
+      };
+
+      trainerBtn.onclick = function () {
+        openTab(trainerInfo, trainerBtn);
+      };
+
+      function openTab(tabContent, tabButton) {
+        let i, tabcontents, tablinks;
+
+        tabcontents = document.querySelectorAll(".tabcontent");
+        for (i = 0; i < tabcontents.length; i++) {
+          tabcontents[i].style.display = "none";
+        }
+
+        tablinks = document.querySelectorAll(".tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].classList.remove("active");
+        }
+
+        tabContent.style.display = "block";
+        tabButton.classList.add("active");
+      }
+    </script>
+  </body>
+</html>
