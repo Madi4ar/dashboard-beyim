@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.5.0/dist/frappe-gantt.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <style>
+      @keyframes draw-arrow {
+        from {
+          stroke-dasharray: 0, 1000;
+          stroke-dashoffset: 0;
+        }
+        to {
+          stroke-dasharray: 1000, 0;
+          stroke-dashoffset: 0;
+        }
+      }
+
+      .arrow path {
+        stroke: #847e7e;
+        stroke-width: 1;
+        fill: none;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: draw-arrow 2s ease forwards;
+      }
+      .progressbar-text {
+        margin-left: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        font-family: Arial, sans-serif;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      #gantt-chart {
+        width: 100%;
+        height: 500px;
+        border: 1px solid #ccc;
+      }
+      .details-container {
+        padding: 10px;
+        border-radius: 4px;
+        background: #f7f7f7;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .custom-gantt {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ccc;
+        font-family: Arial, sans-serif;
+        width: 100%;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        min-height: 50px;
+      }
+
+      .name {
+        width: 200px;
+        padding: 10px;
+        border-right: 1px solid #ccc;
+        text-align: left;
+      }
+
+      .group {
+        flex: 1;
+        position: relative;
+        border-right: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .task {
+        padding: 5px 10px;
+        border-radius: 4px;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .blue {
+        background-color: #62b4e1;
+      }
+
+      .pink {
+        background-color: #f7c5d8;
+      }
+
+      .gantt .arrow {
+        display: none;
+      }
+      .active {
+        background: white;
+        font-weight: 700;
+        border-radius: 10px;
+      }
+    </style>
+    <div class="block1">
+      <div class="container mx-auto p-2 md:p-2">
+        <div class="bg-[#F5F5F5] px-11 py-16 rounded-lg flex flex-col">
+          <div class="title w-full flex items-start">
+            <p class="font-light text-[#847E7E] text-2xl underline">
+              Проект «Отпан»
+            </p>
+          </div>
+
+          <div class="flex flex-col mt-10">
+            <div class="flex items-center">
+              <a href="" class="flex items-center">
+                <img src="images/Group 64.svg" />
+
+                <p class="font-bold text-base ml-5 border-b-4 border-[#CF4747]">
+                  Слушатели
+                </p>
+              </a>
+            </div>
+
+            <div
+              class="flex flex-col md:flex-row items-center md:items-start mt-10"
+            >
+              <div
+                class="flex-col md:flex-row shadow-md w-full p-5 md:w-[500px] bg-white flex items-center md:items-start justify-between rounded-lg md:py-7 md:px-9"
+              >
+                <div class="flex flex-col items-center">
+                  <p>план</p>
+                  <span
+                    class="numscroller text-[#CF4747] text-4xl font-bold"
+                    data-min="1"
+                    data-max="786"
+                    data-delay="5"
+                    data-increment="10"
+                  ></span>
+                </div>
+
+                <div class="mt-5 lg:mt-0 flex flex-col items-center">
+                  <p>завершили</p>
+                  <span
+                    class="numscroller text-[#5ABFD6] text-4xl font-bold"
+                    data-min="1"
+                    data-max="500"
+                    data-delay="5"
+                    data-increment="10"
+                  ></span>
+                </div>
+
+                <div class="mt-5 lg:mt-0 flex flex-col items-center">
+                  <p>обучаются</p>
+                  <span
+                    class="numscroller text-[#D9CC5C] text-4xl font-bold"
+                    data-min="1"
+                    data-max="200"
+                    data-delay="5"
+                    data-increment="10"
+                  ></span>
+                </div>
+              </div>
+
+              <div
+                class="rounded-lg bg-[#D9D9D9] py-4 px-6 flex items-center ml-0 mt-5 md:ml-10"
+              >
+                <div class="relative mt-2">
+                  <img class="w-16" src="images/slice.png" alt="" />
+                  <span
+                    class="absolute top-4 left-3.5 numscroller text-white text-xl font-bold"
+                    data-min="1"
+                    data-max="400"
+                    data-delay="5"
+                    data-increment="10"
+                  ></span>
+                </div>
+
+                <div class="flex flex-col ml-5">
+                  <p class="font-medium">Выдано</p>
+
+                  <p>200 справок</p>
+                  <p>300 сертификатов</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row justify-between mt-10 w-full lg:w-[60%]"
+          >
+            <div class="flex flex-col mb-4 md:!w-52 w-full">
+              <select
+                wire:model.defer="affiliate"
+                class="w-full h-10 px-3 py-1 border rounded focus:border-blue-500 hover:border-blue-500 text-sm outline-none text-black focus:input-shadow"
+              >
+                <option value="">Области</option>
+                <option value="1">Астана</option>
+                <option value="2">Алматы</option>
+                <option value="3">Ақтау</option>
+                <option value="4">Ақтөбе</option>
+                <option value="5">Атырау</option>
+                <option value="6">Қарағанды</option>
+                <option value="7">Көкшетау</option>
+                <option value="8">Қостанай</option>
+                <option value="9">Қызылорда</option>
+                <option value="10">Павлодар</option>
+                <option value="11">Петропавл</option>
+                <option value="12">Талдықорған</option>
+                <option value="13">Тараз</option>
+                <option value="14">Орал</option>
+                <option value="15">Өскемен</option>
+                <option value="16">Шымкент</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col mb-4 md:!w-52 w-full">
+              <select
+                wire:model.defer="affiliate"
+                class="w-full h-10 px-3 py-1 border rounded focus:border-blue-500 hover:border-blue-500 text-sm outline-none text-black focus:input-shadow"
+              >
+                <option value="">Районы</option>
+                <option value="1">Астана</option>
+                <option value="2">Алматы</option>
+                <option value="3">Ақтау</option>
+                <option value="4">Ақтөбе</option>
+                <option value="5">Атырау</option>
+                <option value="6">Қарағанды</option>
+                <option value="7">Көкшетау</option>
+                <option value="8">Қостанай</option>
+                <option value="9">Қызылорда</option>
+                <option value="10">Павлодар</option>
+                <option value="11">Петропавл</option>
+                <option value="12">Талдықорған</option>
+                <option value="13">Тараз</option>
+                <option value="14">Орал</option>
+                <option value="15">Өскемен</option>
+                <option value="16">Шымкент</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col mb-4 md:!w-52 w-full">
+              <select
+                wire:model.defer="affiliate"
+                class="w-full h-10 px-3 py-1 border rounded focus:border-blue-500 hover:border-blue-500 text-sm outline-none text-black focus:input-shadow"
+              >
+                <option value="">Села</option>
+                <option value="1">Астана</option>
+                <option value="2">Алматы</option>
+                <option value="3">Ақтау</option>
+                <option value="4">Ақтөбе</option>
+                <option value="5">Атырау</option>
+                <option value="6">Қарағанды</option>
+                <option value="7">Көкшетау</option>
+                <option value="8">Қостанай</option>
+                <option value="9">Қызылорда</option>
+                <option value="10">Павлодар</option>
+                <option value="11">Петропавл</option>
+                <option value="12">Талдықорған</option>
+                <option value="13">Тараз</option>
+                <option value="14">Орал</option>
+                <option value="15">Өскемен</option>
+                <option value="16">Шымкент</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col mb-4 md:!w-52 w-full">
+              <select
+                wire:model.defer="affiliate"
+                class="w-full h-10 px-3 py-1 border rounded focus:border-blue-500 hover:border-blue-500 text-sm outline-none text-black focus:input-shadow"
+              >
+                <option value="">Школы</option>
+                <option value="1">Астана</option>
+                <option value="2">Алматы</option>
+                <option value="3">Ақтау</option>
+                <option value="4">Ақтөбе</option>
+                <option value="5">Атырау</option>
+                <option value="6">Қарағанды</option>
+                <option value="7">Көкшетау</option>
+                <option value="8">Қостанай</option>
+                <option value="9">Қызылорда</option>
+                <option value="10">Павлодар</option>
+                <option value="11">Петропавл</option>
+                <option value="12">Талдықорған</option>
+                <option value="13">Тараз</option>
+                <option value="14">Орал</option>
+                <option value="15">Өскемен</option>
+                <option value="16">Шымкент</option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-lg w-full flex flex-col py-5 md:px-10 px-2"
+          >
+            <div class="flex flex-col md:flex-row justify-end w-full">
+              <div class="flex items-center mr-0 md:mr-5">
+                <div class="w-3.5 h-3.5 rounded bg-[#CF4747]"></div>
+                <p class="font-medium ml-3">план</p>
+              </div>
+
+              <div class="flex items-center mr-0 md:mr-5">
+                <div class="w-3.5 h-3.5 rounded bg-[#5ABFD6]"></div>
+                <p class="font-medium ml-3">завершили</p>
+              </div>
+
+              <div class="flex items-center mr-0 md:mr-5">
+                <div class="w-3.5 h-3.5 rounded bg-[#D9CC5C]"></div>
+                <p class="font-medium ml-3">сейчас обучаются</p>
+              </div>
+            </div>
+
+            <div class="flex flex-col w-full mt-5 max-h-96 overflow-y-auto">
+              <div
+                class="flex flex-col md:flex-row items-center justify-between mb-7"
+              >
+                <p>Акмолинская область</p>
+
+                <div class="flex flex-col w-[80%]">
+                  <div id="line_container_one" class="w-full mt-3 h-3"></div>
+                  <div id="line_container_two" class="w-full mt-3 h-3"></div>
+                  <div id="line_container_three" class="w-full mt-3 h-3"></div>
+                </div>
+                <p class="text-[#B5ACAC]">4.5</p>
+              </div>
+
+              <div
+                class="flex flex-col md:flex-row items-center justify-between"
+              >
+                <p>Актюбинская область</p>
+
+                <div class="flex flex-col w-[80%]">
+                  <div id="line_container_four" class="w-full mt-3 h-3"></div>
+                  <div id="line_container_five" class="w-full mt-3 h-3"></div>
+                  <div id="line_container_six" class="w-full mt-3 h-3"></div>
+                </div>
+                <p class="text-[#B5ACAC]">3.5</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mx-auto mt-10">
+            <button class="toggleOpen">
+              <img src="images/topArrow.png" alt="" />
+            </button>
+          </div>
+
+          <div
+            class="hidden optimizeBanner mt-10 bg-white rounded-lg w-full px-2 py-3 lg:py-8 lg:px-6"
+          >
+            <p class="font-bold mt-5 mb-10">
+              Качественный и количественный состав
+            </p>
+
+            <div class="flex flex-wrap w-full justify-between">
+              <div class="flex flex-col w-full md:w-[35%]">
+                <div
+                  class="w-full shadow-md flex flex-col items-center py-6 px-4 rounded-xl mb-5"
+                >
+                  <div class="flex items-start">
+                    <img src="images/location_on.png" alt="" />
+                    <p
+                      class="ml-2 border-b-4 border-[#CF4747] text-[#46515C] text-xl font-bold flex items-center justify-center"
+                    >
+                      Город/Село
+                    </p>
+                  </div>
+
+                  <div class="flex items-center justify-between w-full mt-2">
+                    <img
+                      src="https://beyim.edu.kz/images/Group 1171274505.svg"
+                      alt=""
+                    />
+                    <div class="flex flex-col items-start w-[50%]">
+                      <div class="bg-[#F1F1F1] w-full h-1">
+                        <div class="bg-[#3B7EA7] w-[56%] h-1"></div>
+                      </div>
+                      <p>Город</p>
+                    </div>
+                    <p class="mb-5">56%</p>
+                  </div>
+
+                  <div class="flex items-center justify-between w-full mt-1">
+                    <img
+                      src="https://beyim.edu.kz/images/Group 1171274506.svg"
+                      alt=""
+                    />
+                    <div class="flex flex-col items-start w-1/2">
+                      <div class="bg-[#F1F1F1] w-full h-1">
+                        <div class="bg-[#3B7EA7] w-[44%] h-1"></div>
+                      </div>
+                      <p>Cело</p>
+                    </div>
+                    <p class="mb-5">44%</p>
+                  </div>
+                </div>
+
+                <div
+                  class="w-full shadow-md flex flex-col items-center py-6 px-4 rounded-xl mb-5"
+                >
+                  <div class="w-full" id="pie-container"></div>
+                </div>
+
+                <div
+                  class="w-full min-h-56 bg-[#3C557B] flex flex-col items-center py-6 px-4 rounded-xl"
+                >
+                  <div class="flex items-start mb-5">
+                    <img src="images/workExp.png" alt="" />
+                    <p
+                      class="ml-5 border-b-4 border-[#CF4747] text-white text-xl font-bold flex items-center justify-center"
+                    >
+                      Стаж работы
+                    </p>
+                  </div>
+
+                  <div
+                    class="w-full bg-white h-[0.5px] rounded-lg mt-10 flex items-center justify-around"
+                  >
+                    <div class="flex flex-col items-center">
+                      <p class="text-[#D9D9D9]">от 5 лет</p>
+                      <div
+                        class="w-7 h-7 rounded-full bg-[#3C557B] border-2 border-[#D9D9D9]"
+                      ></div>
+                      <p class="text-[#D9D9D9]">2%</p>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                      <p class="text-[#D9D9D9]">от 5 лет</p>
+                      <div
+                        class="w-7 h-7 rounded-full bg-[#3C557B] border-2 border-[#D9D9D9]"
+                      ></div>
+                      <p class="text-[#D9D9D9]">2%</p>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                      <p class="text-[#D9D9D9]">от 5 лет</p>
+                      <div
+                        class="w-7 h-7 rounded-full bg-[#3C557B] border-2 border-[#D9D9D9]"
+                      ></div>
+                      <p class="text-[#D9D9D9]">2%</p>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                      <p class="text-[#D9D9D9]">от 5 лет</p>
+                      <div
+                        class="w-7 h-7 rounded-full bg-[#3C557B] border-2 border-[#D9D9D9]"
+                      ></div>
+                      <p class="text-[#D9D9D9]">2%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col w-full md:w-[60%]">
+                <div class="w-full" id="stack-container"></div>
+
+                <div class="flex items-center w-full">
+                  <div class="bg-white rounded-xl p-4 mt-5 w-full">
+                    <div
+                      class="flex flex-col items-center rounded-xl p-8 bg-[#D9D9D9]"
+                    >
+                      <div class="flex items-center mb-5">
+                        <p
+                          class="font-bold text-xl text-[#46515C] flex items-center justify-center"
+                        >
+                          <img
+                            class="ml-3"
+                            src="images/Graphic_Elements.png"
+                            alt=""
+                          />
+                          <span class="ml-5 border-b-4 border-[#CF4747]">
+                            Академическая степень
+                          </span>
+                        </p>
+                      </div>
+                      <div class="flex flex-wrap justify-between mt-5 lg:mt-0">
+                        <div class="w-1/2 flex items-start">
+                          <div
+                            class="mb-4 w-4 h-12 bg-[#F1F1F1] flex items-end"
+                          >
+                            <div class="w-4 h-[0%] bg-[#CF4747]"></div>
+                          </div>
+
+                          <div class="flex flex-col ml-3">
+                            <p>0%</p>
+                            <p class="w-full text-base">Кандидат наук</p>
+                          </div>
+                        </div>
+                        <div class="w-1/2 flex items-start">
+                          <div
+                            class="mb-4 w-4 h-12 bg-[#F1F1F1] flex items-end"
+                          >
+                            <div class="w-4 h-[0%] bg-[#CF4747]"></div>
+                          </div>
+
+                          <div class="flex flex-col ml-3">
+                            <p>0%</p>
+                            <p class="w-full text-base">Доктор Phd</p>
+                          </div>
+                        </div>
+                        <div class="w-1/2 flex items-start">
+                          <div
+                            class="mb-4 w-4 h-12 bg-[#F1F1F1] flex items-end"
+                          >
+                            <div class="w-4 h-[85.3%] bg-[#CF4747]"></div>
+                          </div>
+
+                          <div class="flex flex-col ml-3">
+                            <p>85.3%</p>
+                            <p class="w-full text-base">Нет ученой степени</p>
+                          </div>
+                        </div>
+                        <div class="w-1/2 flex items-start">
+                          <div
+                            class="mb-4 w-4 h-12 bg-[#F1F1F1] flex items-end"
+                          >
+                            <div class="w-4 h-[14.7%] bg-[#CF4747]"></div>
+                          </div>
+
+                          <div class="flex flex-col ml-3">
+                            <p>14.7%</p>
+                            <p class="w-full text-base">Магистр</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4">
+                  <div class="border-2 border-[#3B7EA7] rounded-xl px-8 h-64">
+                    <div class="flex lg:flex-row items-center justify-center">
+                      <div class="flex mt-6">
+                        <p
+                          class="font-bold text-xl text-[#46515C] flex items-center justify-center"
+                        >
+                          <span class="px-2"> Язык преподавания </span>
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="flex flex-col lg:flex-row items-center justify-center"
+                    >
+                      <div class="flex relative">
+                        <img
+                          class="z-10 relative"
+                          src="https://beyim.edu.kz/images/Chart  1.svg"
+                          alt=""
+                        />
+                        <div class="flex flex-col">
+                          <p
+                            class="z-20 text-white absolute top-12 left-12 -translate-x-1/2"
+                          >
+                            44.1%
+                          </p>
+                          <p
+                            class="z-20 text-white absolute top-16 left-12 -translate-x-1/2"
+                          >
+                            Русский
+                          </p>
+                        </div>
+
+                        <img
+                          class="z-10 relative w-full relative top-8 right-8"
+                          src="https://beyim.edu.kz/images/Chart 3.svg"
+                          alt=""
+                        />
+
+                        <div class="flex flex-col">
+                          <p
+                            class="z-20 text-white absolute top-20 left-36 -translate-x-1/2"
+                          >
+                            55.9%
+                          </p>
+                          <p
+                            class="z-20 text-white absolute top-24 left-36 -translate-x-1/2"
+                          >
+                            Казахский
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.5.0/dist/frappe-gantt.min.js"></script>
+
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://bastauproject.kz/themes/demo/assets/javascript/numscroller-1.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/progressbar.js@1.0.1/dist/progressbar.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script>
+      function createLineProgressBar(
+        container,
+        color,
+        animateValue,
+        customText,
+        customStyles = {}
+      ) {
+        const progressBar = new ProgressBar.Line(container, {
+          strokeWidth: 4,
+          easing: "easeInOut",
+          duration: 1400,
+          color: color,
+          trailColor: "#eee",
+          trailWidth: 1,
+          svgStyle: { width: "100%", height: "100%" },
+          text: {
+            style: {
+              color: "#D73A49",
+              position: "absolute",
+              right: "-40px",
+              top: "0px",
+              padding: "0",
+              width: "50px",
+              textAlign: "center",
+              display: "none",
+              alignItems: "center",
+              marginLeft: "50px",
+              fontSize: "20px",
+              fontWeight: "bold",
+              ...customStyles,
+            },
+            autoStyleContainer: false,
+          },
+          from: { color: "#FFEA82" },
+          to: { color: "#ED6A5A" },
+        });
+
+        progressBar.animate(animateValue, {
+          step: (state, bar) => {
+            const percentage = Math.round(bar.value() * 100);
+            bar.setText(`${percentage}% ${customText}`);
+          },
+        });
+
+        return progressBar;
+      }
+
+      createLineProgressBar(line_container_one, "#CF4747", 0.74);
+
+      createLineProgressBar(line_container_two, "#5ABFD6", 0.54);
+      createLineProgressBar(line_container_three, "#E7DE8E", 0.14);
+      createLineProgressBar(line_container_four, "#CF4747", 0.74);
+      createLineProgressBar(line_container_five, "#5ABFD6", 0.54);
+      createLineProgressBar(line_container_six, "#E7DE8E", 0.14);
+
+      Highcharts.chart("pie-container", {
+        chart: {
+          type: "pie",
+        },
+        title: {
+          text: "Гендер",
+        },
+        tooltip: {
+          valueSuffix: "%",
+        },
+        subtitle: {
+          text: 'Source:<a href="https://www.mdpi.com/2072-6643/11/3/684/htm" target="_default">MDPI</a>',
+        },
+        plotOptions: {
+          series: {
+            allowPointSelect: true,
+            cursor: "pointer",
+            dataLabels: [
+              {
+                enabled: true,
+                distance: 20,
+              },
+              {
+                enabled: true,
+                distance: -40,
+                format: "{point.percentage:.1f}%",
+                style: {
+                  fontSize: "1.2em",
+                  textOutline: "none",
+                  opacity: 0.7,
+                },
+                filter: {
+                  operator: ">",
+                  property: "percentage",
+                  value: 10,
+                },
+              },
+            ],
+          },
+        },
+        series: [
+          {
+            name: "Percentage",
+            colorByPoint: true,
+            data: [
+              {
+                name: "Женщины",
+                y: 55.02,
+              },
+              {
+                name: "Мужчины",
+                y: 45.98,
+              },
+            ],
+          },
+        ],
+      });
+
+      Highcharts.chart("stack-container", {
+        chart: {
+          type: "bar",
+        },
+        title: {
+          text: "Категория",
+          align: "center",
+        },
+        xAxis: {
+          categories: [
+            "Высшая",
+            "Педагог-эксперт",
+            "Педагог-исследователь",
+            "Педагог-мастер",
+            "Заместитель руководителя",
+            "Заместитель руководителя",
+            "Заместитель руководителя",
+          ],
+        },
+        yAxis: {
+          min: 0,
+          title: {
+            text: "",
+          },
+        },
+        legend: {
+          reversed: true,
+        },
+        plotOptions: {
+          series: {
+            stacking: "normal",
+            dataLabels: {
+              enabled: true,
+            },
+          },
+        },
+        series: [
+          {
+            name: "Высшая",
+            data: [74, 27, 52, 93, 1272],
+          },
+          {
+            name: "Педагог-эксперт",
+            data: [2106, 2398, 3046, 3195, 4916],
+          },
+          {
+            name: "Педагог-мастер",
+            data: [12213, 12721, 15242, 16518, 25037],
+          },
+        ],
+      });
+
+      document.querySelector(".toggleOpen").onclick = function () {
+        document.querySelector(".optimizeBanner").classList.toggle("!block");
+      };
+    </script>
+  </body>
+</html>
